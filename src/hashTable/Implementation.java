@@ -1,10 +1,28 @@
 package hashTable;
+
+import java.util.ArrayList;
+
 public class Implementation<K, V> {
 	Node head;
     Node tail;
+    private final int numOfBuckets;
+    ArrayList<Node<K,V>> myBucketArray;
+
+    public Implementation() {
+        this.numOfBuckets = 20;                     //20 is assigned a little more than the numbers of total words
+        this.myBucketArray = new ArrayList();
+        for (int i = 0; i < numOfBuckets; i++)
+            this.myBucketArray.add(null);
+    }
 
     public void add(K key, V value) {
-        Node<K, V> myNode = (Node<K, V>) searchNode(key);
+        int index = this.getBucketIndex(key);
+        Node<K,V> myNode= this.myBucketArray.get(index);
+        if(myNode == null) {
+            myNode = new Node(key , value);
+            this.myBucketArray.set(index, myNode);
+        }
+        myNode = (Node<K, V>) searchNode(key);
         if(myNode == null) {
             myNode = new Node(key , value);
             this.append(myNode);
@@ -14,7 +32,7 @@ public class Implementation<K, V> {
         }
     }
 
-   
+    //Append the value in the linked list
     public void append(Node myNode) {
         if(this.head == null)
             this.head = myNode;
@@ -26,7 +44,7 @@ public class Implementation<K, V> {
         }
     }
 
-    
+    //Searching for the word in the linked list
     public Node<K, V> searchNode(K data) {
         Node currentNode = head;
         int position = 0;
@@ -40,13 +58,24 @@ public class Implementation<K, V> {
         return currentNode;
     }
 
-    
+    //Searching for the word and get the value from the linked list
     public V get(K word) {
+        int index = this.getBucketIndex(word);
+        if(this.myBucketArray.get(index) == null)
+            return null;
         Node<K, V> myMapNode = searchNode(word);
         return (myMapNode == null) ? null : myMapNode.getValue();
     }
 
-    
+    //hashcode to find the index
+    private int getBucketIndex(K word) {
+        int hashCode = Math.abs(word.hashCode());
+        int index = hashCode % numOfBuckets;
+        //System.out.println("Key: "+word+" hashcode: "+hashCode+" index: "+index);
+        return index;
+    }
+
+    //Print the linked list
     @Override
     public String toString() {
         return "MyLinkedListNodes{" + head + "}";
@@ -56,4 +85,3 @@ public class Implementation<K, V> {
         System.out.println("My nodes: " + head);
     }
 }
-
